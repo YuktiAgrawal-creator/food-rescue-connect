@@ -14,6 +14,12 @@ const ProtectedRoute = ({ children, role }) => {
   }
 
   if (role && user.role !== role) {
+    if (user.role === 'DONOR') {
+      return <Navigate to="/donor/dashboard" replace />;
+    }
+    if (user.role === 'ORGANIZATION') {
+      return <Navigate to="/org/dashboard" replace />;
+    }
     return <Navigate to="/" replace />;
   }
 

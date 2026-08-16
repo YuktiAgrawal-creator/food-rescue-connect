@@ -1,15 +1,15 @@
 :root {
-  --primary: #10b981;
-  --primary-hover: #059669;
-  --secondary: #3b82f6;
-  --dark: #1f2937;
-  --light: #f9fafb;
+  --primary: #059669; /* Forest green */
+  --primary-hover: #047857;
+  --secondary: #d97706; /* Warm orange */
+  --dark: #111827; /* Charcoal */
+  --light: #f3f4f6;
   --white: #ffffff;
   --danger: #ef4444;
   --warning: #f59e0b;
-  --text-main: #374151;
+  --text-main: #1f2937;
   --text-muted: #6b7280;
-  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-bg: rgba(255, 255, 255, 0.85);
   --border: #e5e7eb;
 }
 

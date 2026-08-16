@@ -7,14 +7,26 @@ const Login = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    setError('');
     try {
-      await login(formData.username, formData.password);
-      navigate('/');
+      const loggedInUser = await login(formData.username, formData.password);
+      if (loggedInUser.role === 'DONOR') {
+        navigate('/donor/dashboard');
+      } else {
+        navigate('/org/dashboard');
+      }
     } catch (err) {
-      setError('Invalid credentials');
+      if (err.response && err.response.data && err.response.data.detail) {
+        setError(err.response.data.detail);
+      } else {
+        setError('Invalid credentials');
+      }
+      setIsSubmitting(false);
     }
   };
 
@@ -32,7 +44,9 @@ const Login = () => {
             <label className="form-label">Password</label>
             <input className="form-input" type="password" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} required />
           </div>
-          <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>Login</button>
+          <button type="submit" className="btn btn-primary" style={{ width: '100%' }} disabled={isSubmitting}>
+            {isSubmitting ? 'Signing in...' : 'Login'}
+          </button>
         </form>
         <p style={{ marginTop: '20px', textAlign: 'center' }}>
           Don't have an account? <Link to="/register">Register</Link>

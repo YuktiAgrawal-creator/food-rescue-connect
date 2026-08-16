@@ -1,0 +1,47 @@
+warning: in the working copy of 'backend/config/settings.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'backend/config/urls.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'backend/donations/serializers.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'backend/donations/views.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'backend/pickups/views.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'backend/users/serializers.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/package-lock.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/App.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/components/ProtectedRoute.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/context/AuthContext.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/index.css', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/pages/DonationDetail.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/pages/DonationForm.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/pages/DonationList.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/pages/DonorDashboard.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/pages/Impact.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/pages/LandingPage.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/pages/Login.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/pages/MapPage.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/pages/OrgDashboard.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/pages/Register.jsx', LF will be replaced by CRLF the next time Git touches it
+ backend/config/settings.py                 |  13 [32m+[m[31m-[m
+ backend/config/urls.py                     |   2 [32m+[m
+ backend/donations/serializers.py           |   7 [32m+[m
+ backend/donations/views.py                 |  56 [32m++++[m
+ backend/pickups/views.py                   |   6 [32m+[m[31m-[m
+ backend/requirements.txt                   | Bin [31m243[m -> [32m224[m bytes
+ backend/users/admin.py                     |  67 [32m+++++[m
+ backend/users/serializers.py               |  85 [32m+++++[m[31m-[m
+ frontend/package-lock.json                 | 404 [32m++++++++++++++++++++++++++++[m[31m-[m
+ frontend/package.json                      |   3 [32m+[m[31m-[m
+ frontend/src/App.jsx                       |   2 [32m+[m[31m-[m
+ frontend/src/components/ProtectedRoute.jsx |   6 [32m+[m
+ frontend/src/context/AuthContext.jsx       |   6 [32m+[m[31m-[m
+ frontend/src/index.css                     |  14 [32m+[m[31m-[m
+ frontend/src/pages/DonationDetail.jsx      |  48 [32m++[m[31m--[m
+ frontend/src/pages/DonationForm.jsx        | 124 [32m+++++[m[31m----[m
+ frontend/src/pages/DonationList.jsx        |  32 [32m++[m[31m-[m
+ frontend/src/pages/DonorDashboard.jsx      |  70 [32m++[m[31m---[m
+ frontend/src/pages/Impact.jsx              | 222 [32m+++++++++++++[m[31m---[m
+ frontend/src/pages/LandingPage.jsx         | 170 [32m++++++++++[m[31m--[m
+ frontend/src/pages/Login.jsx               |  22 [32m+[m[31m-[m
+ frontend/src/pages/MapPage.jsx             |  93 [32m+++++[m[31m--[m
+ frontend/src/pages/OrgDashboard.jsx        |  57 [32m++[m[31m--[m
+ frontend/src/pages/Register.jsx            | 149 [32m++++++++++[m[31m-[m
+ 24 files changed, 1418 insertions(+), 240 deletions(-)

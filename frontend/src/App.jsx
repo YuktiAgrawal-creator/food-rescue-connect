@@ -30,7 +30,7 @@ function App() {
             <Route path="/donate" element={<ProtectedRoute role="DONOR"><DonationForm /></ProtectedRoute>} />
             
             <Route path="/org/dashboard" element={<ProtectedRoute role="ORGANIZATION"><OrgDashboard /></ProtectedRoute>} />
-            <Route path="/donations" element={<ProtectedRoute role="ORGANIZATION"><DonationList /></ProtectedRoute>} />
+            <Route path="/donations" element={<ProtectedRoute><DonationList /></ProtectedRoute>} />
             <Route path="/donations/:id" element={<ProtectedRoute><DonationDetail /></ProtectedRoute>} />
             <Route path="/map" element={<ProtectedRoute role="ORGANIZATION"><MapPage /></ProtectedRoute>} />
           </Routes>

@@ -62,3 +62,59 @@ class DonationViewSet(viewsets.ModelViewSet):
                     pass # Ignore invalid lat/lon parameters
 
         return queryset
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.db.models import Sum
+from django.contrib.auth import get_user_model
+from pickups.models import PickupRequest
+
+User = get_user_model()
+
+class AnalyticsView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, *args, **kwargs):
+        total_donations = Donation.objects.count()
+        completed_pickups = PickupRequest.objects.filter(status='COMPLETED').count()
+        
+        active_donors = User.objects.filter(role='DONOR', donations_made__isnull=False).distinct().count()
+        active_orgs = User.objects.filter(role='ORGANIZATION', pickup_requests_made__isnull=False).distinct().count()
+        
+        # Rescue Progress
+        rescued_donations = Donation.objects.filter(pickup_requests__status='COMPLETED').distinct()
+        rescued_donations_count = rescued_donations.count()
+        
+        # Completed Food Breakdown by ACTUAL unit
+        breakdown_dict = {}
+        for d in rescued_donations:
+            try:
+                val = float(d.quantity)
+            except (ValueError, TypeError):
+                continue
+                
+            unit = str(d.unit).strip().lower() if d.unit else 'unknown'
+            if not unit:
+                unit = 'unknown'
+                
+            if unit in breakdown_dict:
+                breakdown_dict[unit] += val
+            else:
+                breakdown_dict[unit] = val
+                
+        completed_breakdown = [
+            {"unit": unit, "quantity": round(qty, 2) if qty % 1 != 0 else int(qty)}
+            for unit, qty in breakdown_dict.items()
+        ]
+        
+        return Response({
+            'total_donations': total_donations,
+            'completed_pickups': completed_pickups,
+            'food_donors': active_donors,
+            'partner_organizations': active_orgs,
+            'completed_breakdown': completed_breakdown,
+            'rescue_progress': {
+                'created_donations': total_donations,
+                'rescued_donations': rescued_donations_count
+            }
+        })

@@ -80,9 +80,9 @@ class PickupRequestViewSet(viewsets.ModelViewSet):
         if pickup.status != 'ACCEPTED':
             return Response({'detail': 'Only accepted pickups can be completed.'}, status=status.HTTP_400_BAD_REQUEST)
             
-        # Both donor and organization might be able to complete it, let's allow either
-        if request.user not in [pickup.donation.donor, pickup.requester]:
-            return Response({'detail': 'Not authorized.'}, status=status.HTTP_403_FORBIDDEN)
+        # Only the requesting organization is allowed to complete the pickup
+        if request.user.role != 'ORGANIZATION' or request.user != pickup.requester:
+            return Response({'detail': 'Not authorized. Only the requesting organization can mark this pickup as completed.'}, status=status.HTTP_403_FORBIDDEN)
             
         pickup.status = 'COMPLETED'
         pickup.save()

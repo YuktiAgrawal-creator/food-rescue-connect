@@ -11,6 +11,13 @@ class DonationSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('donor', 'organization_assigned', 'status', 'created_at', 'updated_at')
 
+    def validate(self, data):
+        if not self.instance:
+            address = data.get('address')
+            if not address:
+                raise serializers.ValidationError({"location": "A valid pickup address is required for new donations."})
+        return data
+
     def create(self, validated_data):
         # Automatically set the donor to the current user
         request = self.context.get('request')

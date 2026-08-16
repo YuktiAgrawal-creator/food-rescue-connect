@@ -46,50 +46,57 @@ const DonorDashboard = () => {
       </div>
 
       {stats && (
-        <div className="grid grid-cols-3" style={{ marginBottom: '40px' }}>
-          <div className="card">
-            <h3 style={{ color: 'var(--text-muted)', fontSize: '1rem' }}>Total Donations</h3>
-            <p style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'var(--primary)' }}>{stats.total_donations || 0}</p>
+        <div className="grid grid-cols-3" style={{ marginBottom: '40px', gap: '20px' }}>
+          <div className="card text-center" style={{ borderTop: '4px solid var(--primary)' }}>
+            <h3 style={{ color: 'var(--text-muted)', fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Total Donations</h3>
+            <p style={{ fontSize: '3rem', fontWeight: '800', color: 'var(--primary)', margin: '10px 0' }}>{stats.total_donations || 0}</p>
           </div>
-          <div className="card">
-            <h3 style={{ color: 'var(--text-muted)', fontSize: '1rem' }}>Pending Pickups</h3>
-            <p style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'var(--warning)' }}>{stats.pending_requests || 0}</p>
+          <div className="card text-center" style={{ borderTop: '4px solid var(--warning)' }}>
+            <h3 style={{ color: 'var(--text-muted)', fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Pending Pickups</h3>
+            <p style={{ fontSize: '3rem', fontWeight: '800', color: 'var(--warning)', margin: '10px 0' }}>{stats.pending_requests || 0}</p>
           </div>
-          <div className="card">
-            <h3 style={{ color: 'var(--text-muted)', fontSize: '1rem' }}>Completed Rescues</h3>
-            <p style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'var(--secondary)' }}>{stats.completed_donations || 0}</p>
+          <div className="card text-center" style={{ borderTop: '4px solid var(--secondary)' }}>
+            <h3 style={{ color: 'var(--text-muted)', fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Completed Rescues</h3>
+            <p style={{ fontSize: '3rem', fontWeight: '800', color: 'var(--secondary)', margin: '10px 0' }}>{stats.completed_donations || 0}</p>
           </div>
         </div>
       )}
 
-      <h3>Your Recent Donations</h3>
-      <div className="card" style={{ marginTop: '20px', overflowX: 'auto' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: '40px', marginBottom: '20px' }}>
+        <h3 style={{ fontSize: '1.5rem', margin: 0 }}>Your Recent Donations</h3>
+      </div>
+      <div className="card" style={{ padding: '0', overflowX: 'auto' }}>
         <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
-          <thead>
+          <thead style={{ background: 'var(--light)' }}>
             <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ padding: '12px' }}>Title</th>
-              <th style={{ padding: '12px' }}>Quantity</th>
-              <th style={{ padding: '12px' }}>Status</th>
-              <th style={{ padding: '12px' }}>Date</th>
-              <th style={{ padding: '12px' }}>Actions</th>
+              <th style={{ padding: '15px 20px', color: 'var(--text-muted)', fontWeight: '600' }}>Title</th>
+              <th style={{ padding: '15px 20px', color: 'var(--text-muted)', fontWeight: '600' }}>Quantity</th>
+              <th style={{ padding: '15px 20px', color: 'var(--text-muted)', fontWeight: '600' }}>Status</th>
+              <th style={{ padding: '15px 20px', color: 'var(--text-muted)', fontWeight: '600' }}>Date</th>
+              <th style={{ padding: '15px 20px', color: 'var(--text-muted)', fontWeight: '600' }}>Actions</th>
             </tr>
           </thead>
           <tbody>
             {donations.map(don => (
               <tr key={don.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                <td style={{ padding: '12px' }}>{don.title}</td>
-                <td style={{ padding: '12px' }}>{don.quantity} {don.unit}</td>
-                <td style={{ padding: '12px' }}>
+                <td style={{ padding: '15px 20px', fontWeight: '500' }}>{don.title}</td>
+                <td style={{ padding: '15px 20px', color: 'var(--text-main)' }}>{don.quantity} {don.unit}</td>
+                <td style={{ padding: '15px 20px' }}>
                   <span className={`badge badge-${don.status.toLowerCase()}`}>{don.status}</span>
                 </td>
-                <td style={{ padding: '12px' }}>{new Date(don.created_at).toLocaleDateString()}</td>
-                <td style={{ padding: '12px' }}>
-                  <Link to={`/donations/${don.id}`} className="btn btn-outline" style={{ padding: '4px 8px', fontSize: '12px' }}>View</Link>
+                <td style={{ padding: '15px 20px', color: 'var(--text-muted)' }}>{new Date(don.created_at).toLocaleDateString()}</td>
+                <td style={{ padding: '15px 20px' }}>
+                  <Link to={`/donations/${don.id}`} className="btn btn-outline" style={{ padding: '6px 12px', fontSize: '12px' }}>View</Link>
                 </td>
               </tr>
             ))}
             {donations.length === 0 && (
-              <tr><td colSpan="5" style={{ padding: '12px', textAlign: 'center' }}>No donations yet.</td></tr>
+              <tr>
+                <td colSpan="5" style={{ padding: '40px 20px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                  <div style={{ fontSize: '3rem', marginBottom: '10px', color: '#cbd5e1' }}>📦</div>
+                  <p>You haven't listed any food donations yet.</p>
+                </td>
+              </tr>
             )}
           </tbody>
         </table>
@@ -102,6 +109,8 @@ const DonorDashboard = () => {
             <tr style={{ borderBottom: '1px solid var(--border)' }}>
               <th style={{ padding: '12px' }}>Donation</th>
               <th style={{ padding: '12px' }}>Requester</th>
+              <th style={{ padding: '12px' }}>Location</th>
+              <th style={{ padding: '12px' }}>Scheduled For</th>
               <th style={{ padding: '12px' }}>Status</th>
               <th style={{ padding: '12px' }}>Notes</th>
               <th style={{ padding: '12px' }}>Actions</th>
@@ -110,8 +119,10 @@ const DonorDashboard = () => {
           <tbody>
             {pickups.map(p => (
               <tr key={p.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                <td style={{ padding: '12px' }}>Donation #{p.donation}</td>
-                <td style={{ padding: '12px' }}>User #{p.requester}</td>
+                <td style={{ padding: '12px' }}>{p.donation_details ? `${p.donation_details.title} — ${p.donation_details.quantity} ${p.donation_details.unit}` : `Donation #${p.donation}`}</td>
+                <td style={{ padding: '12px' }}>{p.requester_details ? (p.requester_details.organization_name || p.requester_details.first_name || p.requester_details.username || 'Unknown Organization') : `User #${p.requester}`}</td>
+                <td style={{ padding: '12px' }}>{p.donation_details?.address || '-'}</td>
+                <td style={{ padding: '12px', color: 'var(--text-main)' }}>{p.scheduled_time ? new Date(p.scheduled_time).toLocaleString() : (p.donation_details?.pickup_ready_by ? new Date(p.donation_details.pickup_ready_by).toLocaleString() : 'Not scheduled yet')}</td>
                 <td style={{ padding: '12px' }}>
                   <span className={`badge badge-${p.status.toLowerCase()}`}>{p.status}</span>
                 </td>
@@ -123,14 +134,11 @@ const DonorDashboard = () => {
                       <button className="btn btn-danger" style={{ padding: '4px 8px', fontSize: '12px' }} onClick={() => handleAction(p.id, 'reject')}>Reject</button>
                     </>
                   )}
-                  {p.status === 'ACCEPTED' && (
-                    <button className="btn btn-secondary" style={{ padding: '4px 8px', fontSize: '12px' }} onClick={() => handleAction(p.id, 'complete')}>Mark Completed</button>
-                  )}
                 </td>
               </tr>
             ))}
             {pickups.length === 0 && (
-              <tr><td colSpan="5" style={{ padding: '12px', textAlign: 'center' }}>No pickup requests yet.</td></tr>
+              <tr><td colSpan="7" style={{ padding: '12px', textAlign: 'center' }}>No pickup requests yet.</td></tr>
             )}
           </tbody>
         </table>
