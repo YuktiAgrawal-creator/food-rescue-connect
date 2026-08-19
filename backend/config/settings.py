@@ -23,7 +23,11 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-@!o0%lb*%a#z5xpuk&1=u
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '*').split(',')
+ALLOWED_HOSTS = [
+    host.strip().strip("'\"")
+    for host in os.environ.get('ALLOWED_HOSTS', '*').split(',')
+    if host.strip()
+]
 
 
 # Application definition
@@ -139,12 +143,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = DEBUG
 
 CORS_ALLOWED_ORIGINS = [
-    origin.strip()
+    origin.strip().strip("'\"").rstrip("/")
     for origin in os.environ.get('CORS_ALLOWED_ORIGINS', '').split(',')
     if origin.strip()
 ]
 CSRF_TRUSTED_ORIGINS = [
-    origin.strip()
+    origin.strip().strip("'\"").rstrip("/")
     for origin in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
     if origin.strip()
 ]
