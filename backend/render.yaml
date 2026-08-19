@@ -16,9 +16,11 @@ services:
       - key: DEBUG
         value: "False"
       - key: ALLOWED_HOSTS
-        value: "food-rescue-backend.onrender.com"
+        value: "*"
       - key: CORS_ALLOWED_ORIGINS
-        value: "https://food-rescue-frontend.vercel.app"
+        value: "https://food-rescue-connect-indol.vercel.app"
+      - key: CSRF_TRUSTED_ORIGINS
+        value: "https://food-rescue-connect-indol.vercel.app"
 
 databases:
   - name: food-rescue-db

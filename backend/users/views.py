@@ -1,5 +1,7 @@
-from rest_framework import generics, status
+from rest_framework import generics, permissions, status
+from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.db import connection
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth import get_user_model
@@ -46,3 +48,23 @@ class DashboardView(generics.GenericAPIView):
             data['available_food_global'] = Donation.objects.filter(status='AVAILABLE').count()
 
         return Response(data)
+
+class DBHealthCheckView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def get(self, request):
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT 1")
+                row = cursor.fetchone()
+            return Response({
+                "status": "ok",
+                "database": "connected",
+                "result": row[0]
+            })
+        except Exception as e:
+            return Response({
+                "status": "error",
+                "database": "disconnected",
+                "error": str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
