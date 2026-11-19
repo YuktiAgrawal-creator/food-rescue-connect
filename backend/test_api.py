@@ -1,11 +1,13 @@
 import os
 import django
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
-django.setup()
 
-from django.test import Client
+if __name__ == '__main__':
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
+    django.setup()
 
-client = Client()
-response = client.get('/api/analytics/')
-print(f"Status Code: {response.status_code}")
-print(f"Response: {response.json()}")
+    from django.test import Client
+
+    client = Client()
+    response = client.get('/api/analytics/')
+    print(f"Status Code: {response.status_code}")
+    print(f"Response: {response.json()}")

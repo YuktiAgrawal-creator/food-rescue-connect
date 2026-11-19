@@ -22,13 +22,22 @@ load_dotenv(BASE_DIR / '.env')
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-@!o0%lb*%a#z5xpuk&1=u7e091(@mokd(uzpl(ly=9++1tlbvi')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+# Automatically default to False if running on Render, True in local development
+IS_RENDER = os.environ.get('RENDER', 'false').lower() in ('true', '1')
+default_debug = 'False' if IS_RENDER else 'True'
+DEBUG = os.environ.get('DEBUG', default_debug).lower() in ('true', '1', 't')
 
 ALLOWED_HOSTS = [
     host.strip().strip("'\"")
     for host in os.environ.get('ALLOWED_HOSTS', '*').split(',')
     if host.strip()
 ]
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME and RENDER_EXTERNAL_HOSTNAME not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+for h in ['food-rescue-connect.onrender.com', 'localhost', '127.0.0.1']:
+    if h not in ALLOWED_HOSTS and '*' not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(h)
 
 
 # Application definition
@@ -86,9 +95,16 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-if 'DATABASE_URL' in os.environ:
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if DATABASE_URL:
+    is_local_db = 'localhost' in DATABASE_URL or '127.0.0.1' in DATABASE_URL
+    ssl_require = os.environ.get('DB_SSL_REQUIRE', 'False' if is_local_db else 'True').lower() in ('true', '1', 't')
     DATABASES = {
-        'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
+        'default': dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=ssl_require
+        )
     }
 else:
     DATABASES = {
@@ -135,10 +151,20 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-MEDIA_URL = 'media/'
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
+WHITENOISE_MANIFEST_STRICT = False
+
+MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
@@ -146,18 +172,53 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Honour the 'X-Forwarded-Proto' header for request.is_secure() behind Render's reverse proxy
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+if not DEBUG:
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+
 CORS_ALLOW_ALL_ORIGINS = DEBUG
 
-CORS_ALLOWED_ORIGINS = [
+default_cors_origins = [
+    'https://food-rescue-connect-indol.vercel.app',
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+]
+
+env_cors = [
     origin.strip().strip("'\"").rstrip("/")
     for origin in os.environ.get('CORS_ALLOWED_ORIGINS', '').split(',')
     if origin.strip()
 ]
-CSRF_TRUSTED_ORIGINS = [
+
+CORS_ALLOWED_ORIGINS = list(dict.fromkeys(default_cors_origins + env_cors))
+
+default_csrf_origins = [
+    'https://food-rescue-connect-indol.vercel.app',
+    'https://food-rescue-connect.onrender.com',
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+]
+
+if RENDER_EXTERNAL_HOSTNAME:
+    default_csrf_origins.append(f'https://{RENDER_EXTERNAL_HOSTNAME}')
+
+env_csrf = [
     origin.strip().strip("'\"").rstrip("/")
     for origin in os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
     if origin.strip()
 ]
+
+CSRF_TRUSTED_ORIGINS = list(dict.fromkeys(default_csrf_origins + env_csrf))
+
+CORS_ALLOW_CREDENTIALS = True
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',

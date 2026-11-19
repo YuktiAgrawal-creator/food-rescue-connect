@@ -1,7 +1,15 @@
 import axios from 'axios';
 
+// Priority:
+// 1. Explicit environment variable: VITE_API_URL (configured on Vercel or in .env)
+// 2. Production fallback: https://food-rescue-connect.onrender.com/api
+// 3. Development fallback: http://localhost:8000/api
+const baseURL = import.meta.env.VITE_API_URL || (import.meta.env.PROD
+  ? 'https://food-rescue-connect.onrender.com/api'
+  : 'http://localhost:8000/api');
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api',
+  baseURL,
 });
 
 api.interceptors.request.use(
