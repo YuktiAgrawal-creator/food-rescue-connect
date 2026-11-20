@@ -97,8 +97,17 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
 if DATABASE_URL:
+    is_internal_render = 'dpg-' in DATABASE_URL and '.render.com' not in DATABASE_URL
     is_local_db = 'localhost' in DATABASE_URL or '127.0.0.1' in DATABASE_URL
-    ssl_require = os.environ.get('DB_SSL_REQUIRE', 'False' if is_local_db else 'True').lower() in ('true', '1', 't')
+    if 'DB_SSL_REQUIRE' in os.environ:
+        ssl_require = os.environ.get('DB_SSL_REQUIRE').lower() in ('true', '1', 't')
+    elif is_internal_render or is_local_db:
+        ssl_require = False
+    elif 'sslmode=require' in DATABASE_URL or '.render.com' in DATABASE_URL:
+        ssl_require = True
+    else:
+        ssl_require = False
+
     DATABASES = {
         'default': dj_database_url.config(
             default=DATABASE_URL,
@@ -113,8 +122,16 @@ else:
     db_user = os.environ.get('DB_USER') or os.environ.get('PGUSER') or os.environ.get('USER') or 'postgres'
     db_password = os.environ.get('DB_PASSWORD') or os.environ.get('PGPASSWORD') or os.environ.get('PASSWORD') or 'postgres'
 
+    is_internal_render = 'dpg-' in db_host and '.render.com' not in db_host
     is_local_db = 'localhost' in db_host or '127.0.0.1' in db_host
-    ssl_require = os.environ.get('DB_SSL_REQUIRE', 'False' if is_local_db else 'True').lower() in ('true', '1', 't')
+    if 'DB_SSL_REQUIRE' in os.environ:
+        ssl_require = os.environ.get('DB_SSL_REQUIRE').lower() in ('true', '1', 't')
+    elif is_internal_render or is_local_db:
+        ssl_require = False
+    elif '.render.com' in db_host:
+        ssl_require = True
+    else:
+        ssl_require = False
 
     db_config = {
         'ENGINE': 'django.db.backends.postgresql',
@@ -124,7 +141,7 @@ else:
         'HOST': db_host,
         'PORT': db_port,
     }
-    if ssl_require and not is_local_db:
+    if ssl_require:
         db_config['OPTIONS'] = {'sslmode': 'require'}
 
     DATABASES = {

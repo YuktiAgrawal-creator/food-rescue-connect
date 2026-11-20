@@ -43,11 +43,27 @@ class DashboardView(generics.GenericAPIView):
             data['pending_requests'] = PickupRequest.objects.filter(requester=user, status='PENDING').count()
             data['accepted_pickups'] = PickupRequest.objects.filter(requester=user, status='ACCEPTED').count()
             data['completed_pickups'] = PickupRequest.objects.filter(requester=user, status='COMPLETED').count()
-            
-            # Count nearby food (if we had proper coordinates, for now just global available)
             data['available_food_global'] = Donation.objects.filter(status='AVAILABLE').count()
 
+        elif user.role == 'ADMIN':
+            data['total_users'] = User.objects.count()
+            data['total_donors'] = User.objects.filter(role='DONOR').count()
+            data['total_organizations'] = User.objects.filter(role='ORGANIZATION').count()
+            data['total_donations'] = Donation.objects.count()
+            data['active_donations'] = Donation.objects.filter(status='AVAILABLE').count()
+            data['total_pickups'] = PickupRequest.objects.count()
+            data['completed_pickups'] = PickupRequest.objects.filter(status='COMPLETED').count()
+
         return Response(data)
+
+class AdminUserListView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = UserSerializer
+
+    def get_queryset(self):
+        if self.request.user.role != 'ADMIN':
+            return User.objects.none()
+        return User.objects.all().order_by('-date_joined')
 
 class DBHealthCheckView(APIView):
     permission_classes = (permissions.AllowAny,)
