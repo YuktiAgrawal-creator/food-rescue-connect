@@ -6,6 +6,22 @@ from django.http import JsonResponse
 from donations.views import AnalyticsView
 from users.views import DBHealthCheckView
 
+def api_root(request):
+    return JsonResponse({
+        "status": "ok",
+        "service": "Food Rescue Connect API",
+        "version": "1.0.1",
+        "endpoints": {
+            "health": "/health/",
+            "db_health": "/health/db/",
+            "auth": "/api/auth/",
+            "donations": "/api/donations/",
+            "pickups": "/api/pickups/",
+            "notifications": "/api/notifications/",
+            "analytics": "/api/analytics/"
+        }
+    })
+
 def health_check(request):
     return JsonResponse({
         "status": "ok",
@@ -14,6 +30,7 @@ def health_check(request):
     })
 
 urlpatterns = [
+    path('', api_root, name='api_root'),
     path('admin/', admin.site.urls),
     path('health/', health_check, name='health_check_root'),
     path('health/db/', DBHealthCheckView.as_view(), name='health_check_db_root'),
