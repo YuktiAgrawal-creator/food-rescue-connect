@@ -4,6 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.http import JsonResponse
 from donations.views import AnalyticsView
+from users.views import DBHealthCheckView
 
 def health_check(request):
     return JsonResponse({
@@ -15,6 +16,7 @@ def health_check(request):
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('health/', health_check, name='health_check_root'),
+    path('health/db/', DBHealthCheckView.as_view(), name='health_check_db_root'),
     path('api/health/', health_check, name='health_check'),
     path('api/auth/', include('users.urls')),
     path('api/donations/', include('donations.urls')),

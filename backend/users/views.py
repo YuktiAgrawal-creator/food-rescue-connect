@@ -57,10 +57,16 @@ class DBHealthCheckView(APIView):
             with connection.cursor() as cursor:
                 cursor.execute("SELECT 1")
                 row = cursor.fetchone()
+
+            table_names = connection.introspection.table_names()
+            has_user_table = 'users_user' in table_names
+            user_count = User.objects.count() if has_user_table else 0
+
             return Response({
                 "status": "ok",
                 "database": "connected",
-                "result": row[0]
+                "has_users_table": has_user_table,
+                "user_count": user_count,
             })
         except Exception as e:
             return Response({

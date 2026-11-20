@@ -107,15 +107,28 @@ if DATABASE_URL:
         )
     }
 else:
+    db_host = os.environ.get('DB_HOST') or os.environ.get('PGHOST') or os.environ.get('HOST') or 'localhost'
+    db_port = os.environ.get('DB_PORT') or os.environ.get('PGPORT') or '5432'
+    db_name = os.environ.get('DB_NAME') or os.environ.get('PGDATABASE') or os.environ.get('DATABASE') or 'food_rescue'
+    db_user = os.environ.get('DB_USER') or os.environ.get('PGUSER') or os.environ.get('USER') or 'postgres'
+    db_password = os.environ.get('DB_PASSWORD') or os.environ.get('PGPASSWORD') or os.environ.get('PASSWORD') or 'postgres'
+
+    is_local_db = 'localhost' in db_host or '127.0.0.1' in db_host
+    ssl_require = os.environ.get('DB_SSL_REQUIRE', 'False' if is_local_db else 'True').lower() in ('true', '1', 't')
+
+    db_config = {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': db_name,
+        'USER': db_user,
+        'PASSWORD': db_password,
+        'HOST': db_host,
+        'PORT': db_port,
+    }
+    if ssl_require and not is_local_db:
+        db_config['OPTIONS'] = {'sslmode': 'require'}
+
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ.get('DB_NAME', 'food_rescue'),
-            'USER': os.environ.get('DB_USER', 'postgres'),
-            'PASSWORD': os.environ.get('DB_PASSWORD', 'postgres'),
-            'HOST': os.environ.get('DB_HOST', 'localhost'),
-            'PORT': os.environ.get('DB_PORT', '5432'),
-        }
+        'default': db_config
     }
 
 AUTH_USER_MODEL = 'users.User'
@@ -230,4 +243,42 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'AUTH_HEADER_TYPES': ('Bearer',),
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '[{asctime}] {levelname} [{name}] {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+    },
 }
