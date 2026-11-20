@@ -17,6 +17,8 @@ class PickupRequestViewSet(viewsets.ModelViewSet):
         elif user.role == 'ORGANIZATION':
             # Organizations see pickups they made
             return PickupRequest.objects.filter(requester=user)
+        elif user.role == 'ADMIN':
+            return PickupRequest.objects.all()
         return PickupRequest.objects.none()
 
     def create(self, request, *args, **kwargs):
@@ -92,3 +94,24 @@ class PickupRequestViewSet(viewsets.ModelViewSet):
         donation.save()
         
         return Response({'status': 'Pickup completed'})
+
+    @action(detail=True, methods=['post'])
+    def cancel(self, request, pk=None):
+        pickup = self.get_object()
+        if request.user != pickup.requester and request.user != pickup.donation.donor and request.user.role != 'ADMIN':
+            return Response({'detail': 'Not authorized to cancel this request.'}, status=status.HTTP_403_FORBIDDEN)
+        
+        if pickup.status in ['COMPLETED', 'CANCELLED']:
+            return Response({'detail': f'Cannot cancel a pickup with status {pickup.status}.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        pickup.status = 'CANCELLED'
+        pickup.save()
+        
+        donation = pickup.donation
+        active_requests = PickupRequest.objects.filter(donation=donation, status__in=['PENDING', 'ACCEPTED']).exclude(id=pickup.id)
+        if not active_requests.exists():
+            donation.status = 'AVAILABLE'
+            donation.organization_assigned = None
+            donation.save()
+            
+        return Response({'status': 'Pickup cancelled'})

@@ -24,11 +24,16 @@ class DonationViewSet(viewsets.ModelViewSet):
 
         # Filtering logic
         if self.action == 'list':
-            # Donors see their own, organizations see AVAILABLE
+            # Donors see their own by default, organizations see AVAILABLE, Admins see all
             if user.role == 'DONOR':
-                queryset = queryset.filter(donor=user)
+                if self.request.query_params.get('browse') == 'true':
+                    queryset = queryset.filter(status='AVAILABLE')
+                else:
+                    queryset = queryset.filter(donor=user)
             elif user.role == 'ORGANIZATION':
                 queryset = queryset.filter(status='AVAILABLE')
+            elif user.role == 'ADMIN':
+                pass # Admins see all donations
 
             # Haversine Distance Filtering (radius in km)
             lat = self.request.query_params.get('lat')
@@ -62,6 +67,12 @@ class DonationViewSet(viewsets.ModelViewSet):
                     pass # Ignore invalid lat/lon parameters
 
         return queryset
+
+    def perform_destroy(self, instance):
+        if instance.status in ['ACCEPTED', 'PICKED_UP', 'COMPLETED']:
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied(f"Cannot delete a donation with status {instance.status}.")
+        instance.delete()
 
 from rest_framework.views import APIView
 from rest_framework.response import Response

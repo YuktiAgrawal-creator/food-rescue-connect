@@ -38,3 +38,9 @@ def create_pickup_notification(sender, instance, created, **kwargs):
                 notification_type='SUCCESS',
                 message=f"Pickup for '{instance.donation.title}' completed successfully."
             )
+        elif instance.status == 'CANCELLED':
+            Notification.objects.create(
+                user=instance.donation.donor,
+                notification_type='INFO',
+                message=f"Pickup request for '{instance.donation.title}' was cancelled."
+            )

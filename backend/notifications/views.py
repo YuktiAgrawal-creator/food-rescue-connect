@@ -17,3 +17,8 @@ class NotificationViewSet(viewsets.ReadOnlyModelViewSet):
         notification.read = True
         notification.save()
         return Response({'status': 'Notification marked as read'})
+
+    @action(detail=False, methods=['post', 'patch'])
+    def mark_all_read(self, request):
+        Notification.objects.filter(user=request.user, read=False).update(read=True)
+        return Response({'status': 'All notifications marked as read'})

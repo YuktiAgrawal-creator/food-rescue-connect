@@ -197,10 +197,15 @@ CORS_ALLOW_ALL_ORIGINS = DEBUG
 
 default_cors_origins = [
     'https://food-rescue-connect-indol.vercel.app',
+    'https://food-rescue-connect-yuktiagrawal22-3197s-projects.vercel.app',
     'http://localhost:5173',
     'http://127.0.0.1:5173',
     'http://localhost:3000',
     'http://127.0.0.1:3000',
+]
+
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https:\/\/.*\.vercel\.app$",
 ]
 
 env_cors = [
@@ -213,6 +218,8 @@ CORS_ALLOWED_ORIGINS = list(dict.fromkeys(default_cors_origins + env_cors))
 
 default_csrf_origins = [
     'https://food-rescue-connect-indol.vercel.app',
+    'https://food-rescue-connect-yuktiagrawal22-3197s-projects.vercel.app',
+    'https://*.vercel.app',
     'https://food-rescue-connect.onrender.com',
     'http://localhost:5173',
     'http://127.0.0.1:5173',
